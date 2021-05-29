@@ -26,20 +26,8 @@ class bullets:
         self.mask=pygame.mask.from_surface(img)
         self.active=False
 
-#    def draw(window):
-#        window.blit(img,x,y)
-#    def move(v):
-#        selfy=selfy-v
-#        if selfy >= 0:
-#            return True
-#    def shoot(x,y,cool):
-#        if cool == 0:
-#            bullet=bullets(x,y,potato)
-#            bullets.append(bullet)
-#            cool=cool+1
-#        return cool
+
 for bulletn in range(maxbullets):
-    print(bulletn)
     bullet.append(bullets(0,0,potato))
 
 def collide(obj1,obj2):
@@ -48,11 +36,15 @@ def collide(obj1,obj2):
     return obj1.mask.overlap(obj2.mask, (offsetx,offsety)) != None
 
 def reset():
+    global bulletcount
     screen.fill(backgroundcolor)
     if bulletcount > 0:
         for bulletn in range(maxbullets):
             if bullet[bulletn].active:
                 screen.blit(bullet[bulletn].img, (bullet[bulletn].x,bullet[bulletn].y))
+                if bullet[bulletn].y<-50:
+                    bullet[bulletn].active=False
+                    bulletcount-=1
     screen.blit(ship,charpos)
     pygame.display.flip()
 while 1:
@@ -88,5 +80,4 @@ while 1:
         cooldown-=1
 
     reset()
-    pygame.display.flip()
 pygame.quit()
