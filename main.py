@@ -1,2 +1,2 @@
-import pygame
+import sys, pygame
 import testPotato
