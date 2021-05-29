@@ -7,6 +7,7 @@ bulletspeed=5
 bulletcount=0
 potatosize=50
 potato = pygame.image.load("potato.png")
+asteroid=pygame.image.load("Asteroid2.png")
 potato = pygame.transform.scale(potato, (potatosize, potatosize))
 pygame.init()
 ship = pygame.image.load("ship2.png")
@@ -18,6 +19,8 @@ charpos=[width/2,height-50]
 screen = pygame.display.set_mode(size)
 GameClock = pygame.time.Clock()
 backgroundcolor= 0,0,0
+
+
 class bullets:
     def __init__(self,x,y,img):
         self.x=x
@@ -47,6 +50,7 @@ def reset():
                     bulletcount-=1
     screen.blit(ship,charpos)
     pygame.display.flip()
+
 while 1:
     GameClock.tick(speed)
     for event in pygame.event.get():
