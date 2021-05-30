@@ -39,7 +39,7 @@ yellow=255, 236, 11
 class rocks:
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.vy=random.randrange(1,25)
+        self.vy=random.randrange(1,7)
         self.img=pygame.image.load("Asteroid2.png")
         self.img= pygame.transform.scale(self.img, (rocksize, rocksize))
         self.rect= self.img.get_rect(topleft=(random.randrange(25,(width-25)),-75))
