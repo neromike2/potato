@@ -28,9 +28,9 @@ speed=40
 agility=5
 size = width, height = 800, 750
 charpos=[width/2,height-50]
+bg = pygame.image.load("background.jpg")
 screen = pygame.display.set_mode(size)
 GameClock = pygame.time.Clock()
-backgroundcolor= 0,0,0
 pygame.display.set_caption('space shooter')
 font = pygame.font.SysFont(None, 24)
 textcolor=255,255,255
@@ -39,7 +39,7 @@ yellow=255, 236, 11
 class rocks:
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.vy=random.randrange(1,5)
+        self.vy=random.randrange(1,25)
         self.img=pygame.image.load("Asteroid2.png")
         self.img= pygame.transform.scale(self.img, (rocksize, rocksize))
         self.rect= self.img.get_rect(topleft=(random.randrange(25,(width-25)),-75))
@@ -74,7 +74,7 @@ def collide(obj1, obj2):
 
 def reset():
     global bulletcount
-    screen.fill(backgroundcolor)
+    screen.blit(bg, (0, 0))
     if bulletcount > 0:
         for bulletn in range(maxbullets):
             if bullet[bulletn].active:
@@ -149,6 +149,15 @@ while 1:
         rockspawnspeed+=0.015
 
     if health<=0:
+        a=200
+        while a>0:
+            font = pygame.font.SysFont(None, 40)
+            screen.blit(font.render('You lost but remember to not litter,', True, textcolor), (100, height/2))
+            screen.blit(font.render('save money, and eat healthy', True, textcolor),(100,height/2+23))
+        #enviorment, finance and health
+            GameClock.tick(40)
+            a-=1
+            pygame.display.flip()
         sys.exit()
 
 
