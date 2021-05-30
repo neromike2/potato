@@ -1,6 +1,9 @@
 import sys, pygame
 import random
 import pygame.font
+from pygame import rect
+
+rocksize=80
 pygame.font.init()
 font=pygame.font.Font('freesansbold.ttf', 22)
 health=3
@@ -31,13 +34,17 @@ pygame.display.set_caption('space shooter')
 
 class rocks:
     def __init__(self):
-        self.x=random.randrange(25,(width-25))
-        self.y=-75
+        pygame.sprite.Sprite.__init__(self)
         self.vy=random.randrange(1,5)
-        if self.x > width/2:
-            self.vx=-(random.random())/5
+        self.img=pygame.image.load("Asteroid2.png")
+        self.img= pygame.transform.scale(self.img, (rocksize, rocksize))
+        self.rect= self.img.get_rect(topleft=(random.randrange(25,(width-25)),-75))
+
+        if self.rect.x > width/2:
+            self.vx=-(random.random())/3
         else:
-            self.vx=(random.random())/5
+            self.vx=(random.random())/3
+
 
 def miss(rockn):
     global health
@@ -47,20 +54,18 @@ def miss(rockn):
 
 class bullets:
     def __init__(self,x,y,img):
-        self.x=x
-        self.y=y
-        self.img=img
-        self.mask=pygame.mask.from_surface(img)
+        self.img=pygame.image.load("potato.png")
+        self.img=pygame.transform.scale(self.img,(potatosize,potatosize))
         self.active=False
+        self.rect= self.img.get_rect(topleft=(x,y))
+
 
 
 for bulletn in range(maxbullets):
     bullet.append(bullets(0,0,potato))
 
-def collide(obj1,obj2):
-    offsetx=obj2.x-obj1.x
-    offsety=obj2.y-obj2.y
-    return obj1.mask.overlap(obj2.mask, (offsetx,offsety)) != None
+def collide(obj1, obj2):
+    return (pygame.sprite.collide_rect(obj1,obj2))
 
 def reset():
     global bulletcount
@@ -68,17 +73,17 @@ def reset():
     if bulletcount > 0:
         for bulletn in range(maxbullets):
             if bullet[bulletn].active:
-                screen.blit(bullet[bulletn].img, (bullet[bulletn].x,bullet[bulletn].y))
-                if bullet[bulletn].y<-50:
+                screen.blit(bullet[bulletn].img, (bullet[bulletn].rect.x,bullet[bulletn].rect.y))
+                if bullet[bulletn].rect.y<-50:
                     bullet[bulletn].active=False
                     bulletcount-=1
     screen.blit(ship,charpos)
     if rockcount > 0:
         for rockn in rock:
-            screen.blit(asteroid,(rockn.x,rockn.y))
-            rockn.x+=rockn.vx
-            rockn.y+=rockn.vy
-            if rockn.y>height+10:
+            screen.blit(asteroid,(rockn.rect.x,rockn.rect.y))
+            rockn.rect.x+=rockn.vx
+            rockn.rect.y+=rockn.vy
+            if rockn.rect.y>height+10:
                 miss(rockn)
     text=font.render(("health " + str(health)), True, (255,255,255))
     textrect=text.get_rect()
@@ -98,23 +103,27 @@ while 1:
         charpos[0] = charpos[0]+agility
 
     if keypressed[pygame.K_SPACE] and cooldown==0:
-        print(bulletcount)
         freebullet=-1
         for bulletn in range(maxbullets):
 
             if not bullet[bulletn].active:
                 freebullet=bulletn
         if freebullet>-1:
-            print("Found free bullet at " + str(freebullet))
             bulletcount+=1
             bullet[freebullet].active=True
-            bullet[freebullet].x = charpos[0]
-            bullet[freebullet].y = charpos[1]
+            bullet[freebullet].rect.x = charpos[0]
+            bullet[freebullet].rect.y = charpos[1]
             cooldown+=speed
     if bulletcount > 0:
         for bulletn in range(maxbullets):
             if bullet[bulletn].active:
-                bullet[bulletn].y -= bulletspeed
+                bullet[bulletn].rect.y -= bulletspeed
+                for rockn in rock:
+                    if collide(rockn,bullet[bulletn]):
+                        bullet[bulletn].active=False
+                        bulletcount-=1
+                        health+=1
+                        miss(rockn)
     if cooldown >0:
         cooldown-=1
 
@@ -126,7 +135,6 @@ while 1:
 
     if health<=0:
         sys.exit()
-
 
 
 
