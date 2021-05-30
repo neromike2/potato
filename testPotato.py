@@ -2,7 +2,9 @@ import sys, pygame
 import random
 import pygame.font
 from pygame import rect
-
+score=0
+power=0
+rockspawnspeed=0.25
 rocksize=80
 pygame.font.init()
 font=pygame.font.Font('freesansbold.ttf', 22)
@@ -22,7 +24,7 @@ potato = pygame.transform.scale(potato, (potatosize, potatosize))
 pygame.init()
 ship = pygame.image.load("ship2.png")
 ship= pygame.transform.rotate(ship,180)
-speed=20
+speed=40
 agility=5
 size = width, height = 800, 750
 charpos=[width/2,height-50]
@@ -30,7 +32,9 @@ screen = pygame.display.set_mode(size)
 GameClock = pygame.time.Clock()
 backgroundcolor= 0,0,0
 pygame.display.set_caption('space shooter')
-
+font = pygame.font.SysFont(None, 24)
+textcolor=255,255,255
+yellow=255, 236, 11
 
 class rocks:
     def __init__(self):
@@ -65,6 +69,7 @@ for bulletn in range(maxbullets):
     bullet.append(bullets(0,0,potato))
 
 def collide(obj1, obj2):
+    global score
     return (pygame.sprite.collide_rect(obj1,obj2))
 
 def reset():
@@ -85,11 +90,11 @@ def reset():
             rockn.rect.y+=rockn.vy
             if rockn.rect.y>height+10:
                 miss(rockn)
-    text=font.render(("health " + str(health)), True, (255,255,255))
-    textrect=text.get_rect()
-    screen.blit(text,textrect)
-    pygame.display.flip()
+    screen.blit(font.render(("Health " + str(health)),True, textcolor),(0,0))
+    screen.blit(font.render('Player Score: ' + str(score), True, textcolor), (0, 20))
+    pygame.draw.rect(screen,yellow,(width-50,(height/2)-power/2,50,power))
 
+    pygame.display.flip()
 
 while 1:
     GameClock.tick(speed)
@@ -122,24 +127,29 @@ while 1:
                     if collide(rockn,bullet[bulletn]):
                         bullet[bulletn].active=False
                         bulletcount-=1
+                        score += 1
                         health+=1
                         miss(rockn)
+
     if cooldown >0:
         cooldown-=1
+    if power<=200:
+        power+=0.1
+    if keypressed[pygame.K_c] and power>=200:
+        power=0
+        health+=1
 
-    rockcount += 0.25/speed
+
+
+    rockcount += rockspawnspeed/speed
     if rockcount>=1:
         rock.append(rocks())
         rockcount=0
         rocknum+=1
+        rockspawnspeed+=0.015
 
     if health<=0:
         sys.exit()
-
-
-
-
-
 
 
     reset()
