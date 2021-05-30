@@ -1,7 +1,14 @@
 import sys, pygame
 import random
+import pygame.font
+pygame.font.init()
+font=pygame.font.Font('freesansbold.ttf', 22)
+health=3
 cooldown=0
 bullet=[]
+rock=[]
+rocknum=0
+rockcount=0
 maxbullets=3
 bulletspeed=5
 bulletcount=0
@@ -19,6 +26,23 @@ charpos=[width/2,height-50]
 screen = pygame.display.set_mode(size)
 GameClock = pygame.time.Clock()
 backgroundcolor= 0,0,0
+pygame.display.set_caption('space shooter')
+
+
+class rocks:
+    def __init__(self):
+        self.x=random.randrange(25,(width-25))
+        self.y=-75
+        self.vy=random.randrange(1,5)
+        if self.x > width/2:
+            self.vx=-(random.random())/5
+        else:
+            self.vx=(random.random())/5
+
+def miss(rockn):
+    global health
+    health = health-1
+    rock.remove(rockn)
 
 
 class bullets:
@@ -49,7 +73,18 @@ def reset():
                     bullet[bulletn].active=False
                     bulletcount-=1
     screen.blit(ship,charpos)
+    if rockcount > 0:
+        for rockn in rock:
+            screen.blit(asteroid,(rockn.x,rockn.y))
+            rockn.x+=rockn.vx
+            rockn.y+=rockn.vy
+            if rockn.y>height+10:
+                miss(rockn)
+    text=font.render(("health " + str(health)), True, (255,255,255))
+    textrect=text.get_rect()
+    screen.blit(text,textrect)
     pygame.display.flip()
+
 
 while 1:
     GameClock.tick(speed)
@@ -82,6 +117,22 @@ while 1:
                 bullet[bulletn].y -= bulletspeed
     if cooldown >0:
         cooldown-=1
+
+    rockcount += 0.25/speed
+    if rockcount>=1:
+        rock.append(rocks())
+        rockcount=0
+        rocknum+=1
+
+    if health<=0:
+        sys.exit()
+
+
+
+
+
+
+
 
     reset()
 pygame.quit()
