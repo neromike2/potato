@@ -1,6 +1,7 @@
 import sys, pygame
 import random
 import pygame.font
+pygame.init()
 from pygame import rect
 score=0
 power=0
@@ -11,6 +12,7 @@ font=pygame.font.Font('freesansbold.ttf', 22)
 health=3
 cooldown=0
 bullet=[]
+explodesound = pygame.mixer.Sound('exploding.wav')
 rock=[]
 rocknum=0
 rockcount=0
@@ -21,7 +23,6 @@ potatosize=50
 potato = pygame.image.load("potato.png")
 asteroid=pygame.image.load("Asteroid2.png")
 potato = pygame.transform.scale(potato, (potatosize, potatosize))
-pygame.init()
 ship = pygame.image.load("ship2.png")
 ship= pygame.transform.rotate(ship,180)
 speed=40
@@ -128,7 +129,8 @@ while 1:
                         bullet[bulletn].active=False
                         bulletcount-=1
                         score += 1
-                        health+=1
+                        health +=1
+                        explodesound.play()
                         miss(rockn)
 
     if cooldown >0:
